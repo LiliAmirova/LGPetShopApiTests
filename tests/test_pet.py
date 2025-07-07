@@ -1,5 +1,6 @@
 import allure
 import jsonschema
+import pytest
 import requests
 from .schemas.pet_schema import PET_SCHEMA  # точка обоначает уровень, где находится папка
 
@@ -156,5 +157,40 @@ class TestPet:
 
         with allure.step("Проверка статуса ответа GET-запроса"):
             assert response.status_code == 404, f"Код ответа {response.status_code} не совпал с ожидаемым 404"
+
+    @allure.title("Получение списка питомцев по валидному статусу")
+    @pytest.mark.parametrize(
+        "status, expected_status_code",  # какие параметры передаем
+        [
+            ("available", 200),
+            ("pending", 200),
+            ("sold", 200)
+        ]
+    )
+    def test_get_pets_by_valid_status(self, status, expected_status_code):  # параметризованный тест
+        with allure.step(f"Отправка запроса на получение питомцев по валидному статусу {status}"):
+            response = requests.get(f"{BASE_URL}/pet/findByStatus", params={"status": status})
+
+        with allure.step("Проверка статуса ответа и формата данных по валидному статусу}"):
+            assert response.status_code == expected_status_code
+            assert isinstance(response.json(), list)
+
+    @allure.title("Получение списка питомцев по НЕвалидному статусу")
+    @pytest.mark.parametrize(
+        "status, expected_status_code",  # какие параметры передаем
+        [
+            ("", 400),
+            ("ddddd", 400)
+        ]
+    )
+    def test_get_pets_by_ot_valid_status(self, status, expected_status_code):  # параметризованный тест
+        with allure.step(f"Отправка запроса на получение питомцев по Невалидному статусу {status}"):
+            response = requests.get(f"{BASE_URL}/pet/findByStatus", params={"status": status})
+            print('')
+
+        with allure.step("Проверка статуса ответа и формата данных по НЕвалидному статусу}"):
+            assert response.status_code == expected_status_code
+            assert isinstance(response.json(), dict)
+
 
 
