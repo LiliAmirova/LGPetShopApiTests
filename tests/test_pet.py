@@ -167,7 +167,7 @@ class TestPet:
             ("sold", 200)
         ]
     )
-    def test_get_pets_by_valid_status(self, status, expected_status_code):  # параметризованный тест
+    def test_get_pets_by_valid_status(self, status, expected_status_code):    # параметризованный тест
         with allure.step(f"Отправка запроса на получение питомцев по валидному статусу: {status}"):
             response = requests.get(f"{BASE_URL}/pet/findByStatus", params={"status": status})
 
@@ -190,4 +190,5 @@ class TestPet:
         with allure.step(f"Проверка статуса ответа и формата данных по НЕвалидному статусу: {status}"):
             assert response.status_code == expected_status_code
             assert isinstance(response.json(), dict)
+
 
